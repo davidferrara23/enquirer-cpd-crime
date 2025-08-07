@@ -12,7 +12,7 @@ library(dplyr)
 library(ggspatial)
 library(htmlwidgets)
 
-incidents <- read.csv("C:/Users/DFerrara/OneDrive - Gannett Company, Incorporated/Data/Cincinnati Police/Reported Crime/Reported_Crime_(STARS_Category_Offenses)_on_or_after_6_3_2024_20250807.csv", na.strings = c("", "NA"))
+incidents <- read.csv("data/Reported_Crime.csv", na.strings = c("", "NA"))
 
 ## CLEAN UP DATA
 
@@ -102,7 +102,7 @@ interactive_map <- leaflet(incidents_sf) %>%
 
 # Display the interactive map
 interactive_map
-saveWidget(interactive_map, "map.html", selfcontained = TRUE)
+saveWidget(interactive_map, "output/map.html", selfcontained = TRUE)
 
 # Create individual maps for each crime category
 crime_maps <- setNames(
