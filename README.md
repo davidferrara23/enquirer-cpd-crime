@@ -54,3 +54,7 @@ install.packages(c(
 - Only incidents with valid coordinates and within Cincinnati bounds are mapped.
 - Date fields are auto-parsed for flexibility.
 - The script uses muted color palettes for clarity.
+
+## View the Interactive Map
+
+[Open the map on GitHub Pages](https://davidferrara23.github.io/enquirer-cpd-crime/output/map.html)
