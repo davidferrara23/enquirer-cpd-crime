@@ -63,7 +63,7 @@ names(crime_colors) <- crime_types
 color_pal <- colorFactor(palette = crime_colors, domain = crime_types)
 
 # Create interactive map using leaflet (much better than plotly for maps)
-interactive_map <- leaflet(incidents_sf) %>%
+interactive_map <- leaflet(incidents_sf, options = leafletOptions(minZoom = 11, maxZoom = 16)) %>%
     addProviderTiles(providers$CartoDB.Positron) %>%  # Clean base map
     addCircleMarkers(
         lng = ~LONGITUDE_X,
@@ -107,7 +107,7 @@ crime_maps <- setNames(
         cat_data <- incidents_sf[incidents_sf$STARS_Category == cat, ]
         cat_color <- crime_colors[cat]
         
-        leaflet(cat_data) %>%
+        leaflet(cat_data, options = leafletOptions(minZoom = 11, maxZoom = 16)) %>%
             addProviderTiles(providers$CartoDB.Positron) %>%
             addCircleMarkers(
                 lng = ~LONGITUDE_X,
@@ -139,7 +139,7 @@ crime_maps <- setNames(
 
 # Generate a heatmap with interactive buttons to switch between crime types
 # Create a base leaflet map
-heatmap_map <- leaflet() %>%
+heatmap_map <- leaflet(options = leafletOptions(minZoom = 11, maxZoom = 16)) %>%
     addProviderTiles(providers$CartoDB.Positron)
 
 # Add each heatmap layer to the map, only if data exists for that category
@@ -174,8 +174,9 @@ violent_crimes <- c("Homicide", "Robbery", "Strangulation", "Rape", "Agg Assault
 
 # Violent crime heatmap
 violent_data <- incidents_sf[incidents_sf$STARS_Category %in% violent_crimes, ]
-violent_heatmap <- leaflet() %>%
+violent_heatmap <- leaflet(options = leafletOptions(minZoom = 11, maxZoom = 16)) %>%
     addProviderTiles(providers$CartoDB.Positron) %>%
+    setView(lng = -84.51, lat = 39.10, zoom = 12) %>%  # Center on Cincinnati
     addHeatmap(
         data = violent_data,
         lng = ~LONGITUDE_X,
