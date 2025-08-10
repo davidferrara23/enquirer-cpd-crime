@@ -171,3 +171,20 @@ saveWidget(heatmap_map, "output/heatmap_by_type.html", selfcontained = TRUE)
 
 # Display the heatmap
 heatmap_map
+
+# Create separate heatmap for violent crimes
+violent_crimes <- c("Homicide", "Robbery", "Strangulation", "Rape", "Agg Assault")
+
+# Violent crime heatmap
+violent_data <- incidents_sf[incidents_sf$STARS_Category %in% violent_crimes, ]
+violent_heatmap <- leaflet() %>%
+    addProviderTiles(providers$CartoDB.Positron) %>%
+    addHeatmap(
+        data = violent_data,
+        lng = ~LONGITUDE_X,
+        lat = ~LATITUDE_X,
+        blur = 20,
+        max = 0.05,
+        radius = 15
+    )
+saveWidget(violent_heatmap, "output/heatmap_violent.html", selfcontained = TRUE)
