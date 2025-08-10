@@ -169,9 +169,6 @@ heatmap_map <- heatmap_map %>%
 # Save the heatmap map as a separate HTML file
 saveWidget(heatmap_map, "output/heatmap_by_type.html", selfcontained = TRUE)
 
-# Display the heatmap
-heatmap_map
-
 # Create separate heatmap for violent crimes
 violent_crimes <- c("Homicide", "Robbery", "Strangulation", "Rape", "Agg Assault")
 
