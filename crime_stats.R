@@ -11,6 +11,9 @@ library(ggplot2)
 library(dplyr)
 library(ggspatial)
 library(htmlwidgets)
+library(leaflet)
+library(leaflet.extras)
+library(RColorBrewer)
 
 incidents <- read.csv("data/Reported_Crime.csv", na.strings = c("", "NA"))
 
@@ -44,16 +47,8 @@ incidents_map <- incidents_map %>%
 # Convert to sf object
 incidents_sf <- st_as_sf(incidents_map, coords = c("LONGITUDE_X", "LATITUDE_X"), crs = 4326, remove = FALSE)
 
-# Install and load leaflet for better interactive maps
-if (!requireNamespace("leaflet", quietly = TRUE)) install.packages("leaflet")
-library(leaflet)
-
 # Create color palette for crime categories
 categories <- unique(incidents_sf$STARS_Category)
-
-# Use a more muted color palette
-if (!requireNamespace("RColorBrewer", quietly = TRUE)) install.packages("RColorBrewer")
-library(RColorBrewer)
 
 # Create a muted color palette
 if(length(categories) <= 9) {
@@ -100,9 +95,11 @@ interactive_map <- leaflet(incidents_sf) %>%
         opacity = 0.8
     )
 
+# Save the map
+saveWidget(interactive_map, "output/map.html", selfcontained = TRUE)
+
 # Display the interactive map
 interactive_map
-saveWidget(interactive_map, "output/map.html", selfcontained = TRUE)
 
 # Create individual maps for each crime category
 crime_maps <- setNames(
@@ -140,5 +137,53 @@ crime_maps <- setNames(
     unique(incidents_sf$STARS_Category)
 )
 
-# Example: View a specific crime category map
-# crime_maps[["Robbery"]]
+# Generate a heatmap with interactive buttons to switch between crime types
+crime_types <- unique(incidents_sf$STARS_Category)
+
+# Create a named list of heatmap layers for each crime type
+heatmap_layers <- lapply(crime_types, function(cat) {
+    cat_data <- incidents_sf[incidents_sf$STARS_Category == cat, ]
+    leaflet(cat_data) %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        addHeatmap(
+            lng = ~LONGITUDE_X,
+            lat = ~LATITUDE_X,
+            blur = 20,
+            max = 0.05,
+            radius = 15,
+            group = cat
+        )
+})
+names(heatmap_layers) <- crime_types
+
+# Create a base leaflet map
+heatmap_map <- leaflet() %>%
+    addProviderTiles(providers$CartoDB.Positron)
+
+# Add each heatmap layer to the map
+for (cat in crime_types) {
+    cat_data <- incidents_sf[incidents_sf$STARS_Category == cat, ]
+    heatmap_map <- heatmap_map %>%
+        addHeatmap(
+            data = cat_data,
+            lng = ~LONGITUDE_X,
+            lat = ~LATITUDE_X,
+            blur = 20,
+            max = 0.05,
+            radius = 15,
+            group = cat
+        )
+}
+
+# Add layer controls to switch between crime types
+heatmap_map <- heatmap_map %>%
+    addLayersControl(
+        overlayGroups = crime_types,
+        options = layersControlOptions(collapsed = FALSE)
+    )
+
+# Save the heatmap map as a separate HTML file
+saveWidget(heatmap_map, "output/heatmap_by_type.html", selfcontained = TRUE)
+
+# Display the heatmap
+heatmap_map
