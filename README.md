@@ -16,15 +16,16 @@ This project generates interactive maps and statistics from Cincinnati Police in
 
 ## Crime Categories Mapped
 
+- Agg Assault
+- Auto Theft
+- Burglary/BE
 - Homicide
+- Part 2
+- Personal/Other Theft
 - Rape
 - Robbery
-- Aggravated Assault
 - Strangulation
-- Burglary
-- Auto Theft
 - Theft from Auto
-- Personal/Other Theft
 
 ## Requirements
 
